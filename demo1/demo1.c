@@ -6,6 +6,8 @@
 #include <linux/fs.h>
 #include <linux/kdev_t.h>
 #include <linux/cdev.h>
+#include <linux/slab.h>
+#include <linux/device.h>
 
 #define TEST_NAME "test_drv"
 //#define OLD_METHOD
@@ -16,6 +18,9 @@ static unsigned int major = 0;
 static unsigned int minor = 0;
 
 struct cdev *my_cdev;
+
+struct class *test_class;
+struct device *test_device;
 
 int kiana_flag = 0;
 
@@ -74,12 +79,31 @@ static int __init _driver_init(void)
     }
     printk("NEW_METHOD\n");
 #endif
-	return 0;
+
+    ///4.类注册 添加成功后会在/sys/class/目录生成 TEST_NAME 的类///
+    test_class = kzalloc(sizeof(*test_class), GFP_KERNEL);
+    test_class->owner = THIS_MODULE;
+    test_class->name = TEST_NAME;
+    //test_class->class_release = class_create_release;
+    class_register(test_class);
+
+    ///5.设备的注册 添加成功后会在/dev/ 下生成设备///
+    test_device = kzalloc(sizeof(*test_device), GFP_KERNEL);
+    test_device->init_name = TEST_NAME;
+    test_device->class = test_class;
+    test_device->devt = test_devno;
+    test_device->parent = NULL;
+    test_device->driver_data = NULL;
+    device_register(test_device);
+    return 0;
 }
 
 static void __exit _driver_exit(void)
 {
 	printk("_driver_exit\n");
+    device_unregister(test_device);
+
+    class_unregister(test_class);
 
     unregister_chrdev(major,TEST_NAME);
 
