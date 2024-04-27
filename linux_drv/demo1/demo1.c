@@ -24,7 +24,6 @@ struct device *test_device = NULL;
 
 int kiana_flag = 0;
 
-
 EXPORT_SYMBOL_GPL(kiana_flag);
 
 static int test_open(struct inode *inode,struct file *file)
@@ -35,7 +34,7 @@ static int test_open(struct inode *inode,struct file *file)
 
 static int test_release(struct inode *inode, struct file *filp)
 {
-    printk("rfid_release");
+    printk("test_release");
     return 0;
 }
 
@@ -43,16 +42,17 @@ static ssize_t test_write(struct file *filp, const char __user *buf, size_t cnt,
 {
     int copy_count = 0;
     char *read_buf;
+    printk("cnt = %d\n",(int)cnt);
     read_buf = (char *)kzalloc(cnt,GFP_KERNEL);
     copy_count = copy_from_user(read_buf, buf,cnt);
-    printk("copy_from_user buff : %s\n",read_buf);
+    printk("copy_from_user buff : %s \n",read_buf);
     kfree(read_buf);
     return 0;
 }
 
 void device_release(struct device *dev)
 {
-    printk("device_release dev name = %s\n",dev->init_name);
+    printk("device_release dev name = %s \n",dev->init_name);
 }
 
 static struct file_operations test_operation = {

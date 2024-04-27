@@ -10,6 +10,8 @@
 
 #define TEST_STR "test com"
 
+char *str = "test com";
+
 int main(int argc, char *argv[])
 {
     int fd = open("/dev/test_drv", O_RDWR);
@@ -18,11 +20,16 @@ int main(int argc, char *argv[])
         printf("open file failed !\n");
         return -1;
     }
-    if(write(fd,TEST_STR,strlen(TEST_STR)) < 0)
+
+    ///z这里没有加上\0,会没有字符串结束标志///
+    if(write(fd,str,strlen(str) + 1) < 0)
     {
-        printf("write error!\n");
+        printf("write error! len = %d\n",(int)strlen(str));
         //return -1;
     }
+
+
+    printf("str = %d    STR = %d\n", (int)strlen(str), (int)strlen(TEST_STR));
 
 /*    while (1)
     {
