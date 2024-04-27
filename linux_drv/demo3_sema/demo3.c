@@ -9,7 +9,7 @@
 #include <linux/slab.h>
 #include <linux/device.h>
 
-#define TEST_NAME "test_drv"
+#define TEST_NAME "test_drv_demo3"
 //#define OLD_METHOD
 #define NEW_METHOD
 
@@ -21,6 +21,10 @@ struct cdev *my_cdev;
 
 struct class *test_class = NULL;
 struct device *test_device = NULL;
+
+///信号量相关结构体///
+struct semaphore *sema_m;
+
 
 int kiana_flag = 0;
 
@@ -122,6 +126,11 @@ static int __init _driver_init(void)
     test_device->driver_data = NULL;
     test_device->release = device_release;
     device_register(test_device);
+
+    ///-----------------------------------------------------------------------------------------///
+    ///-----信号量-----///
+    sema_m = kzalloc(sizeof(*sema_m), GFP_KERNEL);
+    sema_init(sema_m,1);
     return 0;
 }
 
