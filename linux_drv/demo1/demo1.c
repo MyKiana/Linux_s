@@ -19,27 +19,52 @@ static unsigned int minor = 0;
 
 struct cdev *my_cdev;
 
-struct class *test_class;
-struct device *test_device;
+struct class *test_class = NULL;
+struct device *test_device = NULL;
 
 int kiana_flag = 0;
 
+
 EXPORT_SYMBOL_GPL(kiana_flag);
 
-int test_open(struct inode *inode,struct file *file)
+static int test_open(struct inode *inode,struct file *file)
 {
     printk("test_open \n");
     return 0;
 }
 
+static int test_release(struct inode *inode, struct file *filp)
+{
+    printk("rfid_release");
+    return 0;
+}
+
+static ssize_t test_write(struct file *filp, const char __user *buf, size_t cnt, loff_t *off)
+{
+    int copy_count = 0;
+    char *read_buf;
+    read_buf = (char *)kzalloc(cnt,GFP_KERNEL);
+    copy_count = copy_from_user(read_buf, buf,cnt);
+    printk("copy_from_user buff : %s\n",read_buf);
+    kfree(read_buf);
+    return 0;
+}
+
+void device_release(struct device *dev)
+{
+    printk("device_release dev name = %s\n",dev->init_name);
+}
+
 static struct file_operations test_operation = {
     .owner = THIS_MODULE,
-    .open = test_open
+    .open = test_open,
+    .write = test_write,
+    .release = test_release,
 };
 
 static int __init _driver_init(void)
 {
-	printk("_driver_init%d\n",LINUX_VERSION_CODE);//#include <linux/version.h>
+	printk("_driver_init \nversion = %d\n",LINUX_VERSION_CODE);//#include <linux/version.h>
     printk("this process is %s,pid = %d\n",current->comm,current->pid);//#include <linux/sched.h>
 
     ///1.申请设备号///
@@ -89,11 +114,13 @@ static int __init _driver_init(void)
 
     ///5.设备的注册 添加成功后会在/dev/ 下生成设备///
     test_device = kzalloc(sizeof(*test_device), GFP_KERNEL);//#include <linux/slab.h>
+    //printk("test_device addr = %d\n",test_device);
     test_device->init_name = TEST_NAME;
     test_device->class = test_class;
     test_device->devt = test_devno;
     test_device->parent = NULL;
     test_device->driver_data = NULL;
+    test_device->release = device_release;
     device_register(test_device);
     return 0;
 }
@@ -113,6 +140,8 @@ static void __exit _driver_exit(void)
 #ifdef NEW_METHOD
     cdev_del(my_cdev);
 #endif
+    kfree(test_class);
+    kfree(test_device);
 }
 
 module_init(_driver_init);
