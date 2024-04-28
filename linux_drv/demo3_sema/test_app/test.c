@@ -14,7 +14,7 @@ char *str = "test com";
 
 int main(int argc, char *argv[])
 {
-    int fd = open("/dev/test_drv", O_RDWR);
+    int fd = open("/dev/test_drv_demo3", O_RDWR);
     if (fd < 0)
     {
         printf("open file failed !\n");
@@ -22,14 +22,21 @@ int main(int argc, char *argv[])
     }
 
     ///z这里没有加上\0,会没有字符串结束标志///
-    if(write(fd,str,strlen(str) + 1) < 0)
+    int count = write(fd,str,strlen(str) + 1);
+    if(count < 0)
     {
         printf("write error! len = %d\n",(int)strlen(str));
         //return -1;
     }
 
 
-    printf("str = %d    STR = %d\n", (int)strlen(str), (int)strlen(TEST_STR));
+    printf("count = %d    str = %d    STR = %d\n",count, (int)strlen(str), (int)strlen(TEST_STR));
+
+    while(1)
+    {
+        sleep(10);
+        break;
+    }
 
 /*    while (1)
     {

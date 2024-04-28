@@ -30,8 +30,13 @@ int kiana_flag = 0;
 
 EXPORT_SYMBOL_GPL(kiana_flag);
 
+/*
+ * 信号量
+ * up(sema_m) 和 down_interruptible(sema_m);成对使用*/
+
 static int test_open(struct inode *inode,struct file *file)
 {
+    down_interruptible(sema_m);
     printk("test_open \n");
     return 0;
 }
@@ -39,6 +44,7 @@ static int test_open(struct inode *inode,struct file *file)
 static int test_release(struct inode *inode, struct file *filp)
 {
     printk("test_release");
+    up(sema_m);
     return 0;
 }
 
@@ -51,10 +57,10 @@ static ssize_t test_write(struct file *filp, const char __user *buf, size_t cnt,
     copy_count = copy_from_user(read_buf, buf,cnt);
     printk("copy_from_user buff : %s \n",read_buf);
     kfree(read_buf);
-    return 0;
+    return 100;
 }
 
-void device_release(struct device *dev)
+static void device_release(struct device *dev)
 {
     printk("device_release dev name = %s \n",dev->init_name);
 }
