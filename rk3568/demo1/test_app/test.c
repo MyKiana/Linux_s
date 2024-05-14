@@ -14,7 +14,7 @@ char *str = "test com";
 
 int main(int argc, char *argv[])
 {
-    int fd = open("/dev/test_drv", O_RDWR);
+    int fd = open("/dev/test_dev_drv", O_RDWR);
     if (fd < 0)
     {
         printf("open file failed !\n");

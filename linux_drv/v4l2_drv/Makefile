@@ -6,12 +6,13 @@ ARCH=x86_64
 CROSS_COMPILE=x86_64-linux-gnu-
 export  ARCH  CROSS_COMPILE
 
-obj-m := demo1_dev.o demo1_drv.o
+obj-m := v4l2drv.o
+
+v4l2drv-y :=v4l2_drv.o
 
 all:
 	$(MAKE) -C $(KERNEL_DIR) M=$(CURDIR) modules
-	gcc ./test_app/test.c -o ./test_app/test
-	
+	gcc ./Test/test.c -o ./Test/test
 .PHONY:clean
 clean:
 	$(MAKE)  -C $(KERNEL_DIR) M=$(CURDIR) clean

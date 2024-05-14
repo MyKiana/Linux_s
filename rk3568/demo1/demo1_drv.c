@@ -65,35 +65,23 @@ static struct file_operations test_operation = {
 
 static int demo1_drv_probe(struct platform_device *pdev)
 {
-    struct resource *res;
-    int i = 0;
-
-    while (1)
-    {
-        res = platform_get_resource(pdev, IORESOURCE_IRQ, i++);
-        if (!res)
-            break;
-        device_create(led_class, NULL, MKDEV(major, minor), NULL, TEST_NAME, minor);
+/*    struct resource *res;
+    res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);*/
+    // 创建设备
+    if (device_create(test_class, NULL, test_devno, NULL, TEST_NAME, minor) < 0) {
+        printk("-------------> demo1_drv_probe error! \n");
     }
     return 0;
-
 }
 
 static int demo1_drv_remove(struct platform_device *pdev)
 {
-    struct resource *res;
+/*    struct resource *res;
     int i = 0;
-
-    while (1)
-    {
-        res = platform_get_resource(pdev, IORESOURCE_IRQ, i);
-        if (!res)
-            break;
-
-        led_class_destroy_device(i);
-        i++;
-        g_ledcnt--;
-    }
+    res = platform_get_resource(pdev, IORESOURCE_IRQ, i);
+    if (!res)
+        break;*/
+    device_destroy(test_class, test_devno);
     return 0;
 }
 
