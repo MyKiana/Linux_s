@@ -13,6 +13,8 @@ v4l2drv-y :=v4l2_drv.o
 all:
 	$(MAKE) -C $(KERNEL_DIR) M=$(CURDIR) modules
 	gcc ./Test/test.c -o ./Test/test
+	gcc ./Test/test2.c -o ./Test/test2
 .PHONY:clean
 clean:
 	$(MAKE)  -C $(KERNEL_DIR) M=$(CURDIR) clean
+	rm my.jpg

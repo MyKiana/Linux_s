@@ -15,6 +15,8 @@
 
 #define PATH_NAME "/dev/video0"
 
+
+
 int main(void)
 {
     int fd;
