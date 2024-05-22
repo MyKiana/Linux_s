@@ -6,7 +6,10 @@
 int main(int argc, char *argv[])
 {
 
+
     short resive_data[6];  //保存收到的 mpu6050转换结果数据，依次为 AX(x轴角度), AY, AZ 。GX(x轴加速度), GY ,GZ
+    memset(resive_data,0,sizeof(resive_data[6]));
+
 
     /*打开文件*/
     int fd = open("/dev/I2C1_mpu6050", O_RDWR);
